@@ -9,6 +9,7 @@ channels = []
 for i in range(1, 6):
     fid = open(f'S-31/REGTOT11.C{i}', 'rb')
     c = np.fromfile(fid, np.int16)
+    c = c[15*2000:]
     channels.append(c)
 
 for idx in range(len(channels)):
@@ -17,7 +18,7 @@ for idx in range(len(channels)):
 ax = plt.subplot(111)
 
 for i in channels:
-    new_y = np.arange(0, len(i), 2000)
+    new_y = np.arange(0, len(i), 1000)
     new_x = []
     for j in new_y:
         new_x.append(i[j])
