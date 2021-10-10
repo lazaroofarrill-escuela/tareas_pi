@@ -22,18 +22,17 @@ for i in range(len(lines)):
     channels.append(c)
 
 for idx in range(len(channels)):
-    channels[idx] = list(filter(lambda x: x != 0, channels[idx]))
+    channels[idx] = list(filter(lambda x: x > 1, channels[idx]))
 
 ax = plt.subplot(111)
 
 # finding peaks
 observerChannel = np.array(channels[-1])
-observerChannel = np.array(list(filter(lambda x: x > observerChannel.max() / 10, observerChannel)))
-print(observerChannel.min(), observerChannel.max())
+# observerChannel = np.array(list(filter(lambda x: x > observerChannel.max() / 10, observerChannel)))
+# print(observerChannel.min(), observerChannel.max())
 inverted_channel = np.negative(observerChannel)
 inverted_channel = inverted_channel + abs(inverted_channel.min())
-peaks, _ = signal.find_peaks(inverted_channel, distance=10000, height=inverted_channel.max() / 3)
-print(peaks)
+peaks, _ = signal.find_peaks(inverted_channel, distance=10000, height=inverted_channel.max() / 10)
 peak_y = list(map(lambda x: channels[-1][x], peaks))
 
 font = {
