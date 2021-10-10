@@ -57,13 +57,13 @@ ax.legend(lines, loc='center left', bbox_to_anchor=(1, 0.5))
 # plt.plot(range(0, len(channels[4])), channels[4])
 plt.xlabel('Time (s)')
 plt.ylabel('Amp (mV)')
-plt.show()
 
-# Shrink current axis by 20%
-box = ax.get_position()
-ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-
-# Put a legend to the right of the current axis
-ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+inverted_channel = np.negative(channels[-1])
+inverted_channel = inverted_channel + abs(inverted_channel.min())
+print(inverted_channel)
+peaks, _ = signal.find_peaks(inverted_channel, distance=10000, height=300)
+print(peaks)
+peak_y = list(map(lambda x: channels[-1][x], peaks))
+plt.plot(peaks, peak_y, "x")
 
 plt.show()
