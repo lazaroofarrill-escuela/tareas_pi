@@ -46,7 +46,7 @@ if len(peaks) > 1:
     print(f'peaks = {peaks / sampling_freq}')
     firstPeakTime = peaks[0] / sampling_freq
     lastPeakTime = peaks[-1] / sampling_freq
-    timeGap = 0
+    timeGap = 5
     startTime = int(firstPeakTime - timeGap)
     endTime = int(lastPeakTime + timeGap)
     print(f'first peak = {firstPeakTime}')
@@ -71,7 +71,7 @@ legend_labels.append('picos de sonido')
 # FuncFormatter can be used as a decorator
 @ticker.FuncFormatter
 def x_formatter(x, pos):
-    return "%d" % (int(x) / sampling_freq)
+    return "%.2f" % (x / sampling_freq)
 
 
 # FuncFormatter can be used as a decorator
@@ -80,8 +80,10 @@ def y_formatter(y, pos):
     return "%.2f" % (int(y) / 1000)
 
 
-xtics = np.arange(startTime * sampling_freq, len(channels[0][:endTime * sampling_freq]), sampling_freq * 10)
-ax.xaxis.set_ticks(xtics)
+xtics = np.arange(startTime * sampling_freq, len(channels[0][:endTime * sampling_freq]), sampling_freq * 5)
+new_xtics = np.append(xtics, peaks[0])
+print(f'new x ticks = {new_xtics}')
+# ax.xaxis.set_ticks(new_xtics)
 ax.yaxis.set_major_formatter(y_formatter)
 ax.xaxis.set_major_formatter(x_formatter)
 # plt.xticks(ticks)
