@@ -11,6 +11,7 @@ lines = ['electrocardiograma', 'mercurio', 'esfigmomanómetro', 'Korotkoff sound
 channels = []
 for i in range(len(lines)):
     fid = open(f'S-31/REGTOT11.C{i + 1}', 'rb')
+    # fid = open(f'S-28/REGTOT2.C{i + 1}', 'rb')
     c = np.fromfile(fid, np.int16)
 
     Wn = .5
@@ -29,7 +30,7 @@ ax = plt.subplot(111)
 inverted_channel = np.negative(channels[-1])
 inverted_channel = inverted_channel + abs(inverted_channel.min())
 print(inverted_channel)
-peaks, _ = signal.find_peaks(inverted_channel, distance=10000, height=300)
+peaks, _ = signal.find_peaks(inverted_channel, distance=10000, height=2)
 print(peaks)
 peak_y = list(map(lambda x: channels[-1][x], peaks))
 
@@ -39,11 +40,19 @@ font = {
     'size': 22
 }
 
-firstPeakTime = peaks[0] / 2000
-lastPeakTime = peaks[-1] / 2000
-timeGap = 5
-startTime = int(firstPeakTime - 5)
-endTime = int(lastPeakTime + 5)
+startTime = 0
+endTime = int(len(channels[0]) / 2000)
+if len(peaks) > 1:
+    firstPeakTime = peaks[0] / 2000
+    lastPeakTime = peaks[-1] / 2000
+    timeGap = 5
+    startTime = int(firstPeakTime - 5)
+    endTime = int(lastPeakTime + 5)
+    print(f'first peak = {firstPeakTime}')
+    print(f'last peak = {lastPeakTime}')
+
+print(f'startTime = {startTime}')
+print(f'endTime = {endTime}')
 
 new_x = []
 for i in channels:
