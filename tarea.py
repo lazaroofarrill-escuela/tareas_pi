@@ -3,13 +3,12 @@ from matplotlib import pyplot as plt, ticker
 from scipy import signal
 
 fm = 2000
-
 tick = 1 / fm
 
-lines = ['electrocardiograma', 'mercurio', 'esfigmomanómetro', 'Korotkoff sounds', 'observer']
+legend_labels = ['Electrocardiograma', 'Linea de mercurio', 'Esfigmomanómetro', 'Sonidos Korotkoff', 'Observardor']
 
 channels = []
-for i in range(len(lines)):
+for i in range(len(legend_labels)):
     fid = open(f'S-31/REGTOT11.C{i + 1}', 'rb')
     # fid = open(f'S-28/REGTOT2.C{i + 1}', 'rb')
     c = np.fromfile(fid, np.int16)
@@ -42,10 +41,10 @@ font = {
 }
 
 startTime = 0
-endTime = int(len(channels[0]) / 2000)
+endTime = int(len(channels[0]) / fm)
 if len(peaks) > 1:
-    firstPeakTime = peaks[0] / 2000
-    lastPeakTime = peaks[-1] / 2000
+    firstPeakTime = peaks[0] / fm
+    lastPeakTime = peaks[-1] / fm
     timeGap = 5
     startTime = int(firstPeakTime - 5)
     endTime = int(lastPeakTime + 5)
@@ -58,7 +57,7 @@ print(f'endTime = {endTime}')
 new_x = []
 for i in channels:
     step = 1
-    offsets = int(2000 / step)
+    offsets = int(fm / step)
     new_x = np.arange(0, len(i), step)
     new_x = new_x[startTime * offsets:endTime * offsets]
     new_y = []
@@ -67,13 +66,13 @@ for i in channels:
     ax.plot(new_x, new_y)
 
 plt.plot(peaks, peak_y, "x")
-lines.append('picos de sonido')
+legend_labels.append('picos de sonido')
 
 
 # FuncFormatter can be used as a decorator
 @ticker.FuncFormatter
 def x_formatter(x, pos):
-    return "%d" % (int(x) / 2000)
+    return "%d" % (int(x) / fm)
 
 
 # FuncFormatter can be used as a decorator
@@ -82,14 +81,14 @@ def y_formatter(y, pos):
     return "%.2f" % (int(y) / 1000)
 
 
-ax.xaxis.set_ticks(np.arange(startTime * 2000, len(channels[0][:endTime * 2000]), 20000))
+ax.xaxis.set_ticks(np.arange(startTime * fm, len(channels[0][:endTime * fm]), fm * 10))
 ax.yaxis.set_major_formatter(y_formatter)
 ax.xaxis.set_major_formatter(x_formatter)
 # plt.xticks(ticks)
 
 box = ax.get_position()
 ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-ax.legend(lines, loc='center left', bbox_to_anchor=(1, 0.5))
+ax.legend(legend_labels, loc='center left', bbox_to_anchor=(1, 0.5))
 
 # plt.plot(range(0, len(channels[4])), channels[4])
 plt.xlabel('Time (s)')
