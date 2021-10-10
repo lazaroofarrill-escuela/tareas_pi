@@ -6,7 +6,7 @@ fm = 2000
 
 tick = 1 / fm
 
-lines = ['observer', 'presion', 'oscilometria', 'oscilometria2', 'picos']
+lines = ['observer', 'presion', 'oscilometria', 'oscilometria2', 'observer']
 
 channels = []
 for i in range(len(lines)):
@@ -25,12 +25,15 @@ for idx in range(len(channels)):
 
 ax = plt.subplot(111)
 
+startTime = 0
+endTime = int(len(channels[0]) / 2000)
+
 new_x = []
 for i in channels:
     step = 1
     offsets = int(2000 / step)
     new_x = np.arange(0, len(i), step)
-    new_x = new_x[15 * offsets:50 * offsets]
+    new_x = new_x[startTime * offsets:endTime * offsets]
     new_y = []
     for j in new_x:
         new_y.append(i[j])
@@ -43,7 +46,7 @@ def major_formatter(x, pos):
     return "%d" % (int(x) / 2000)
 
 
-ax.xaxis.set_ticks(np.arange(15 * 2000, len(channels[0][:50 * 2000]), 20000))
+ax.xaxis.set_ticks(np.arange(startTime * 2000, len(channels[0][:endTime * 2000]), 20000))
 ax.xaxis.set_major_formatter(major_formatter)
 # plt.xticks(ticks)
 
