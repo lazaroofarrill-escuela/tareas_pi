@@ -7,6 +7,11 @@ tick = 1 / sampling_freq
 
 legend_labels = ['Electrocardiograma', 'Esfigmomanómetro', 'Oscilaciones del esfigmomanómetro', 'Sonidos Korotkoff',
                  'Observardor']
+# step 1 raw
+# 2 filtered
+# 3 peaks
+# 4 constrained
+step = 4
 
 channels = []
 for i in range(len(legend_labels)):
@@ -17,7 +22,9 @@ for i in range(len(legend_labels)):
     Wn = .2
     N = 1
     b, a = signal.butter(N, Wn, 'low')
-    c = signal.filtfilt(b, a, c)
+
+    if step > 1:
+        c = signal.filtfilt(b, a, c)
 
     channels.append(c)
 
@@ -28,8 +35,6 @@ ax = plt.subplot(111)
 
 # finding peaks
 observerChannel = np.array(channels[-1])
-# observerChannel = np.array(list(filter(lambda x: x > observerChannel.max() / 10, observerChannel)))
-# print(observerChannel.min(), observerChannel.max())
 inverted_channel = np.negative(observerChannel)
 inverted_channel = inverted_channel + abs(inverted_channel.min())
 peaks, _ = signal.find_peaks(inverted_channel, distance=1000, height=inverted_channel.max() / 10)
@@ -43,11 +48,11 @@ font = {
 
 startTime = 0
 endTime = int(len(channels[0]) / sampling_freq)
-if len(peaks) > 1:
+if len(peaks) > 1 and step > 3:
     print(f'peaks = {peaks / sampling_freq}')
     firstPeakTime = peaks[0] / sampling_freq
     lastPeakTime = peaks[-1] / sampling_freq
-    timeGap = 5
+    timeGap = 3
     startTime = int(firstPeakTime - timeGap)
     endTime = int(lastPeakTime + timeGap)
     print(f'first peak = {firstPeakTime}')
@@ -65,8 +70,9 @@ for i in channels:
         new_y.append(i[j])
     ax.plot(new_x, new_y)
 
-plt.plot(peaks, peak_y, "x")
-legend_labels.append('picos de sonido')
+if step > 2:
+    plt.plot(peaks, peak_y, "x")
+    legend_labels.append('picos de sonido')
 
 
 # FuncFormatter can be used as a decorator
@@ -81,10 +87,10 @@ def y_formatter(y, pos):
     return "%.2f" % (int(y) / 1000)
 
 
-xtics = np.arange(new_x[0], new_x[-1], sampling_freq * 5)
-new_xtics = np.append(xtics, peaks)
-print(f'new x ticks = {new_xtics}')
-ax.xaxis.set_ticks(new_xtics)
+xTicks = np.arange(new_x[0], new_x[-1], sampling_freq * 5)
+xTicks = np.append(xTicks, peaks)
+print(f'new x ticks = {xTicks}')
+ax.xaxis.set_ticks(xTicks)
 ax.yaxis.set_major_formatter(y_formatter)
 ax.xaxis.set_major_formatter(x_formatter)
 
@@ -98,6 +104,6 @@ plt.xlabel('Time (s)')
 plt.ylabel('Amp (V)')
 
 fig = plt.gcf()
-fig.set_size_inches(18.5, 10.5)
-plt.savefig('graph', dpi=400)
+fig.set_size_inches(10, 5)
+plt.savefig(f'plot-step-{step}', dpi=400, bbox_inches='tight')
 plt.show()
