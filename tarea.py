@@ -27,10 +27,12 @@ for idx in range(len(channels)):
 ax = plt.subplot(111)
 
 # finding peaks
-inverted_channel = np.negative(channels[-1])
+observerChannel = np.array(channels[-1])
+observerChannel = np.array(list(filter(lambda x: x > observerChannel.max() / 10, observerChannel)))
+print(observerChannel.min(), observerChannel.max())
+inverted_channel = np.negative(observerChannel)
 inverted_channel = inverted_channel + abs(inverted_channel.min())
-print(inverted_channel)
-peaks, _ = signal.find_peaks(inverted_channel, distance=10000, height=2)
+peaks, _ = signal.find_peaks(inverted_channel, distance=10000, height=inverted_channel.max() / 3)
 print(peaks)
 peak_y = list(map(lambda x: channels[-1][x], peaks))
 
