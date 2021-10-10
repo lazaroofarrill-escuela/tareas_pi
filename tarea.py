@@ -6,7 +6,7 @@ fm = 2000
 
 tick = 1 / fm
 
-lines = ['electro', 'mercurio', 'cuff pressure', 'Korotkoff sounds', 'observer']
+lines = ['electrocardiograma', 'mercurio', 'esfigmomanómetro', 'Korotkoff sounds', 'observer']
 
 channels = []
 for i in range(len(lines)):
@@ -87,5 +87,5 @@ plt.ylabel('Amp (V)')
 
 fig = plt.gcf()
 fig.set_size_inches(18.5, 10.5)
-# plt.savefig('graph', dpi=400)
+plt.savefig('graph', dpi=400)
 plt.show()
