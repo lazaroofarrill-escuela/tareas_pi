@@ -2,8 +2,8 @@ import numpy as np
 from matplotlib import pyplot as plt, ticker
 from scipy import signal
 
-fm = 2000
-tick = 1 / fm
+sampling_freq = 2000
+tick = 1 / sampling_freq
 
 legend_labels = ['Electrocardiograma', 'Linea de mercurio', 'Esfigmomanómetro', 'Sonidos Korotkoff', 'Observardor']
 
@@ -31,8 +31,8 @@ observerChannel = np.array(channels[-1])
 # print(observerChannel.min(), observerChannel.max())
 inverted_channel = np.negative(observerChannel)
 inverted_channel = inverted_channel + abs(inverted_channel.min())
-peaks, _ = signal.find_peaks(inverted_channel, distance=10000, height=inverted_channel.max() / 10)
-peak_y = list(map(lambda x: channels[-1][x], peaks))
+peaks, _ = signal.find_peaks(inverted_channel, distance=1000, height=inverted_channel.max() / 10)
+peak_y = list(map(lambda x: observerChannel[x], peaks))
 
 font = {
     'family': 'normal',
@@ -41,13 +41,14 @@ font = {
 }
 
 startTime = 0
-endTime = int(len(channels[0]) / fm)
+endTime = int(len(channels[0]) / sampling_freq)
 if len(peaks) > 1:
-    firstPeakTime = peaks[0] / fm
-    lastPeakTime = peaks[-1] / fm
-    timeGap = 5
-    startTime = int(firstPeakTime - 5)
-    endTime = int(lastPeakTime + 5)
+    print(f'peaks = {peaks / sampling_freq}')
+    firstPeakTime = peaks[0] / sampling_freq
+    lastPeakTime = peaks[-1] / sampling_freq
+    timeGap = 0
+    startTime = int(firstPeakTime - timeGap)
+    endTime = int(lastPeakTime + timeGap)
     print(f'first peak = {firstPeakTime}')
     print(f'last peak = {lastPeakTime}')
 
@@ -56,10 +57,8 @@ print(f'endTime = {endTime}')
 
 new_x = []
 for i in channels:
-    step = 1
-    offsets = int(fm / step)
-    new_x = np.arange(0, len(i), step)
-    new_x = new_x[startTime * offsets:endTime * offsets]
+    new_x = range(0, len(i))
+    new_x = new_x[startTime * sampling_freq:endTime * sampling_freq]
     new_y = []
     for j in new_x:
         new_y.append(i[j])
@@ -72,7 +71,7 @@ legend_labels.append('picos de sonido')
 # FuncFormatter can be used as a decorator
 @ticker.FuncFormatter
 def x_formatter(x, pos):
-    return "%d" % (int(x) / fm)
+    return "%d" % (int(x) / sampling_freq)
 
 
 # FuncFormatter can be used as a decorator
@@ -81,7 +80,8 @@ def y_formatter(y, pos):
     return "%.2f" % (int(y) / 1000)
 
 
-ax.xaxis.set_ticks(np.arange(startTime * fm, len(channels[0][:endTime * fm]), fm * 10))
+xtics = np.arange(startTime * sampling_freq, len(channels[0][:endTime * sampling_freq]), sampling_freq * 10)
+ax.xaxis.set_ticks(xtics)
 ax.yaxis.set_major_formatter(y_formatter)
 ax.xaxis.set_major_formatter(x_formatter)
 # plt.xticks(ticks)
