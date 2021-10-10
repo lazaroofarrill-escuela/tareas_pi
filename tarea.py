@@ -6,7 +6,7 @@ fm = 2000
 
 tick = 1 / fm
 
-lines = ['electro', 'presion', 'oscilometria', 'oscilometria2', 'observer']
+lines = ['electro', 'mercurio', 'cuff pressure', 'Korotkoff sounds', 'observer']
 
 channels = []
 for i in range(len(lines)):
@@ -25,8 +25,25 @@ for idx in range(len(channels)):
 
 ax = plt.subplot(111)
 
-startTime = 0
-endTime = int(len(channels[0]) / 2000)
+# finding peaks
+inverted_channel = np.negative(channels[-1])
+inverted_channel = inverted_channel + abs(inverted_channel.min())
+print(inverted_channel)
+peaks, _ = signal.find_peaks(inverted_channel, distance=10000, height=300)
+print(peaks)
+peak_y = list(map(lambda x: channels[-1][x], peaks))
+
+font = {
+    'family': 'normal',
+    'weight': 'bold',
+    'size': 22
+}
+
+firstPeakTime = peaks[0] / 2000
+lastPeakTime = peaks[-1] / 2000
+timeGap = 5
+startTime = int(firstPeakTime - 5)
+endTime = int(lastPeakTime + 5)
 
 new_x = []
 for i in channels:
@@ -39,13 +56,17 @@ for i in channels:
         new_y.append(i[j])
     ax.plot(new_x, new_y)
 
+plt.plot(peaks, peak_y, "x")
+lines.append('picos de sonido')
+
 
 # FuncFormatter can be used as a decorator
 @ticker.FuncFormatter
 def x_formatter(x, pos):
     return "%d" % (int(x) / 2000)
 
- #FuncFormatter can be used as a decorator
+
+# FuncFormatter can be used as a decorator
 @ticker.FuncFormatter
 def y_formatter(y, pos):
     return "%.2f" % (int(y) / 1000)
@@ -64,21 +85,7 @@ ax.legend(lines, loc='center left', bbox_to_anchor=(1, 0.5))
 plt.xlabel('Time (s)')
 plt.ylabel('Amp (V)')
 
-inverted_channel = np.negative(channels[-1])
-inverted_channel = inverted_channel + abs(inverted_channel.min())
-print(inverted_channel)
-peaks, _ = signal.find_peaks(inverted_channel, distance=10000, height=300)
-print(peaks)
-peak_y = list(map(lambda x: channels[-1][x], peaks))
-
-font = {
-    'family': 'normal',
-    'weight': 'bold',
-    'size': 22
-}
-plt.plot(peaks, peak_y, "x")
-
 fig = plt.gcf()
 fig.set_size_inches(18.5, 10.5)
-# plt.savefig('graph', dpi=300)
+# plt.savefig('graph', dpi=400)
 plt.show()
