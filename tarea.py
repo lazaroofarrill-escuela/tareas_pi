@@ -6,7 +6,7 @@ fm = 2000
 
 tick = 1 / fm
 
-lines = ['observer', 'presion', 'oscilometria', 'oscilometria2', 'observer']
+lines = ['electro', 'presion', 'oscilometria', 'oscilometria2', 'observer']
 
 channels = []
 for i in range(len(lines)):
@@ -42,12 +42,18 @@ for i in channels:
 
 # FuncFormatter can be used as a decorator
 @ticker.FuncFormatter
-def major_formatter(x, pos):
+def x_formatter(x, pos):
     return "%d" % (int(x) / 2000)
+
+ #FuncFormatter can be used as a decorator
+@ticker.FuncFormatter
+def y_formatter(y, pos):
+    return "%.2f" % (int(y) / 1000)
 
 
 ax.xaxis.set_ticks(np.arange(startTime * 2000, len(channels[0][:endTime * 2000]), 20000))
-ax.xaxis.set_major_formatter(major_formatter)
+ax.yaxis.set_major_formatter(y_formatter)
+ax.xaxis.set_major_formatter(x_formatter)
 # plt.xticks(ticks)
 
 box = ax.get_position()
@@ -56,7 +62,7 @@ ax.legend(lines, loc='center left', bbox_to_anchor=(1, 0.5))
 
 # plt.plot(range(0, len(channels[4])), channels[4])
 plt.xlabel('Time (s)')
-plt.ylabel('Amp (mV)')
+plt.ylabel('Amp (V)')
 
 inverted_channel = np.negative(channels[-1])
 inverted_channel = inverted_channel + abs(inverted_channel.min())
