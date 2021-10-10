@@ -64,9 +64,15 @@ print(inverted_channel)
 peaks, _ = signal.find_peaks(inverted_channel, distance=10000, height=300)
 print(peaks)
 peak_y = list(map(lambda x: channels[-1][x], peaks))
+
+font = {
+    'family': 'normal',
+    'weight': 'bold',
+    'size': 22
+}
 plt.plot(peaks, peak_y, "x")
 
 fig = plt.gcf()
 fig.set_size_inches(18.5, 10.5)
-plt.savefig('graph', dpi=300)
+# plt.savefig('graph', dpi=300)
 plt.show()
