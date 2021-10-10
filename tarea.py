@@ -5,7 +5,8 @@ from scipy import signal
 sampling_freq = 2000
 tick = 1 / sampling_freq
 
-legend_labels = ['Electrocardiograma', 'Linea de mercurio', 'Esfigmomanómetro', 'Sonidos Korotkoff', 'Observardor']
+legend_labels = ['Electrocardiograma', 'Esfigmomanómetro', 'Oscilaciones del esfigmomanómetro', 'Sonidos Korotkoff',
+                 'Observardor']
 
 channels = []
 for i in range(len(legend_labels)):
@@ -13,7 +14,7 @@ for i in range(len(legend_labels)):
     # fid = open(f'S-28/REGTOT2.C{i + 1}', 'rb')
     c = np.fromfile(fid, np.int16)
 
-    Wn = .5
+    Wn = .2
     N = 1
     b, a = signal.butter(N, Wn, 'low')
     c = signal.filtfilt(b, a, c)
